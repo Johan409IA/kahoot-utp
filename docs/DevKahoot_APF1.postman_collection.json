@@ -1,0 +1,359 @@
+{
+	"info": {
+		"_postman_id": "b1a2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+		"name": "DevKahoot APF1",
+		"description": "Colección de todos los endpoints del APF1 de DevKahoot, ordenada según la secuencia principal de demostración: 1) crear y consultar preguntas, 2) crear partida e ingresar estudiante, 3) iniciar partida y consultar preguntas públicas, 4) registrar respuesta y comprobar el rechazo de la respuesta duplicada, 5) administración adicional. Requiere la aplicación corriendo en http://localhost:8080.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "codigoPartida",
+			"value": "ABC123"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Preguntas",
+			"item": [
+				{
+					"name": "1.1 Crear primera pregunta de SQL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enunciado\": \"¿Qué instrucción se usa para consultar datos en SQL?\",\n  \"opciones\": [\"SELECT\", \"INSERT\", \"UPDATE\", \"DELETE\"],\n  \"respuestaCorrecta\": \"SELECT\",\n  \"explicacion\": \"SELECT permite consultar datos de una tabla.\",\n  \"categoria\": \"SQL\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/preguntas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "preguntas"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.2 Crear segunda pregunta de SQL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enunciado\": \"¿Qué cláusula se usa para filtrar registros en SQL?\",\n  \"opciones\": [\"WHERE\", \"ORDER BY\", \"GROUP BY\", \"VALUES\"],\n  \"respuestaCorrecta\": \"WHERE\",\n  \"explicacion\": \"WHERE permite filtrar los registros que cumplen una condición.\",\n  \"categoria\": \"SQL\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/preguntas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "preguntas"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1.3 Obtener todas las preguntas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/preguntas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "preguntas"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Partida y estudiante",
+			"item": [
+				{
+					"name": "2.1 Crear partida",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"codigo\": \"ABC123\",\n  \"nombre\": \"Quiz básico de SQL\",\n  \"idsPreguntas\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.2 Agregar estudiante a la partida",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apodo\": \"jpro24\",\n  \"codigoPartida\": \"ABC123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas/{{codigoPartida}}/estudiantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas", "{{codigoPartida}}", "estudiantes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.3 Obtener partida por código",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas/{{codigoPartida}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas", "{{codigoPartida}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.4 Obtener estudiantes de la partida",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas/{{codigoPartida}}/estudiantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas", "{{codigoPartida}}", "estudiantes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.5 Iniciar partida (EN_CURSO)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\"EN_CURSO\""
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas/{{codigoPartida}}/estado",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas", "{{codigoPartida}}", "estado"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2.6 Obtener preguntas públicas de la partida",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"description": "Devuelve PreguntaParaEstudiante: id, enunciado, opciones, categoria y orden. No incluye respuestaCorrecta ni explicacion, para que el estudiante no reciba la solución.",
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas/{{codigoPartida}}/preguntas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas", "{{codigoPartida}}", "preguntas"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Respuestas",
+			"item": [
+				{
+					"name": "3.1 Registrar respuesta",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estudianteId\": 1,\n  \"preguntaId\": 1,\n  \"opcionSeleccionada\": \"SELECT\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas/{{codigoPartida}}/respuestas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas", "{{codigoPartida}}", "respuestas"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2 Registrar respuesta duplicada (409 esperado)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"estudianteId\": 1,\n  \"preguntaId\": 1,\n  \"opcionSeleccionada\": \"INSERT\"\n}"
+						},
+						"description": "Mismo estudiante y misma pregunta que 3.1. Respuesta esperada: 409 Conflict. La respuesta no se registra y el puntaje del estudiante permanece igual (verificar con 4.3 Obtener estudiante por id).",
+						"url": {
+							"raw": "{{baseUrl}}/api/partidas/{{codigoPartida}}/respuestas",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "partidas", "{{codigoPartida}}", "respuestas"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Administración adicional",
+			"item": [
+				{
+					"name": "4.1 Obtener pregunta por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/preguntas/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "preguntas", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.2 Actualizar pregunta",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enunciado\": \"¿Qué cláusula se usa para filtrar registros en SQL?\",\n  \"opciones\": [\"WHERE\", \"ORDER BY\", \"GROUP BY\", \"VALUES\"],\n  \"respuestaCorrecta\": \"WHERE\",\n  \"explicacion\": \"WHERE permite filtrar los registros que cumplen una condición.\",\n  \"categoria\": \"SQL\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/preguntas/2",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "preguntas", "2"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.3 Obtener todos los estudiantes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/estudiantes",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "estudiantes"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.4 Obtener estudiante por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"description": "Permite verificar el puntaje del estudiante después de la respuesta duplicada: debe seguir en 100.",
+						"url": {
+							"raw": "{{baseUrl}}/api/estudiantes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "estudiantes", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.5 Actualizar estudiante",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"apodo\": \"jpro24\",\n  \"codigoPartida\": \"ABC123\",\n  \"puntaje\": 100\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/estudiantes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "estudiantes", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.6 Eliminar pregunta (409 esperado: en uso)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"description": "La pregunta 1 pertenece a la partida ABC123, por lo que la respuesta esperada es 409 Conflict. No se elimina ninguna pregunta antes de crear la partida en la secuencia principal.",
+						"url": {
+							"raw": "{{baseUrl}}/api/preguntas/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "preguntas", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4.7 Eliminar estudiante",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/estudiantes/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "estudiantes", "1"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
