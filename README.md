@@ -1,34 +1,47 @@
-# DevKahoot
+# AdaptCode UTP API
 
-API REST desarrollada con **Spring Boot 4.1.1** y **Java 25** para el primer avance de proyecto final (APF1).
+API REST de la plataforma educativa AdaptCode UTP, construida con Spring Boot 4.1.1, Java 25 y PostgreSQL.
 
-## Qué hace
+## Alcance implementado
 
-- Un docente administra un banco de preguntas de selección múltiple (CRUD de `/api/preguntas`).
-- El docente crea una partida con un código de sala y los ids de sus preguntas.
-- Los estudiantes ingresan a la partida con el código de sala y un apodo.
-- La partida pasa por los estados `ESPERANDO`, `EN_CURSO` y `FINALIZADA`.
-- Mientras está `EN_CURSO`, cada estudiante responde cada pregunta una sola vez y recibe un resultado con puntos y retroalimentación (100 puntos por respuesta correcta).
+- Consulta de cursos, temas y micro-retos para práctica autónoma.
+- Los micro-retos cubren selección múltiple, ordenamiento de bloques, predicción de salida y selección de fragmentos.
+- Las respuestas HTTP no exponen la alternativa correcta, el orden correcto ni la retroalimentación de evaluación.
+- El rol base de usuario se representa con `ESTUDIANTE_UTP`, `DOCENTE_UTP` y `USUARIO_EXTERNO`.
+- Los datos de demostración se cargan únicamente con el perfil `demo`.
 
-## Características
+## Requisitos locales
 
-- Arquitectura por capas: `model`, `service`, `controller`.
-- Almacenamiento en memoria con `ArrayList` (sin base de datos ni JPA).
-- Inyección de dependencias por constructor.
-- Métodos y nombres de negocio en español.
-- Las preguntas que consulta el estudiante (`GET /api/partidas/{codigo}/preguntas`) no incluyen `respuestaCorrecta` ni `explicacion`.
-- Una respuesta duplicada del mismo estudiante a la misma pregunta responde `409 Conflict` y no modifica el puntaje.
-- Los órdenes de las preguntas no se duplican al eliminar y crear preguntas.
+- Java 25.
+- PostgreSQL disponible en `localhost:5433`.
+- Base de datos `adaptcode_utp`.
+- Variables de entorno `ADAPTCODE_DB_USERNAME` y `ADAPTCODE_DB_PASSWORD`.
 
-## Documentación
+En IntelliJ, configura estas dos variables en la configuración `AdaptCodeApplication`. Para cargar temas y micro-retos de demostración, agrega `demo` a **Active profiles** o define `SPRING_PROFILES_ACTIVE=demo`. El perfil no cambia la URL de la API.
 
-- `docs/APF1_API_REST.md` — documentación completa de la API: modelos, endpoints, códigos HTTP, ejemplos JSON y secuencia de demostración.
-- `docs/DevKahoot_APF1.postman_collection.json` — colección de Postman ordenada según la secuencia de demostración.
+El esquema se actualiza automáticamente durante el desarrollo local mediante `spring.jpa.hibernate.ddl-auto=update`; no se debe usar ese ajuste como estrategia de migración en producción.
+
+## Ejecutar
+
+```powershell
+./mvnw.cmd spring-boot:run
+```
+
+Con el perfil `demo` habilitado, la aplicación crea cursos si faltan y carga temas y cuatro micro-retos de demostración sin duplicarlos al reiniciar.
+
+## API REST
+
+- `GET /api/cursos`
+- `GET /api/cursos/{cursoId}/temas`
+- `GET /api/micro-retos?cursoId={id}&temaId={id}&nivel=BASICO`
+- `GET /api/micro-retos/{id}`
+
+Los filtros `temaId` y `nivel` son opcionales. El nivel admite `BASICO`, `INTERMEDIO` y `AVANZADO`. Una búsqueda sin resultados responde `200` con `[]`; los identificadores inexistentes responden `404`; filtros inválidos responden `400`. En esta etapa solo se ofrecen operaciones `GET`.
+
+Los ejemplos de respuesta, escenarios y códigos HTTP están en [`docs/AdaptCode_APF1_API_REST.md`](docs/AdaptCode_APF1_API_REST.md). La colección importable de Postman está en [`docs/AdaptCode_APF1.postman_collection.json`](docs/AdaptCode_APF1.postman_collection.json).
 
 ## Pruebas
 
-El proyecto cuenta con seis pruebas automatizadas que cubren las funcionalidades principales del avance: CRUD de preguntas, delegación del controlador al servicio y el flujo principal de una partida con estudiante, incluyendo el rechazo de respuestas duplicadas.
-
-## Fuera del alcance de este avance
-
-Base de datos, JPA, capa `repository`, autenticación/seguridad, frontend y preguntas aleatorias.
+```powershell
+./mvnw.cmd test
+```

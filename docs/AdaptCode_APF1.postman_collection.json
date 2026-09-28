@@ -1,0 +1,103 @@
+{
+  "info": {
+    "_postman_id": "d25b7364-efb8-4d01-9d44-8c010c107641",
+    "name": "AdaptCode UTP — API REST APF1",
+    "description": "Consultas del catálogo de cursos, temas y micro-retos de demostración.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "cursoId", "value": "1" },
+    { "key": "temaId", "value": "1" },
+    { "key": "microRetoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Cursos",
+      "item": [
+        {
+          "name": "Listar cursos",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/cursos" }
+        }
+      ]
+    },
+    {
+      "name": "Temas",
+      "item": [
+        {
+          "name": "Listar temas por curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/cursos/{{cursoId}}/temas"
+          }
+        },
+        {
+          "name": "Curso inexistente — 404",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/cursos/999999/temas" }
+        }
+      ]
+    },
+    {
+      "name": "Micro-retos",
+      "item": [
+        {
+          "name": "Filtrar por curso, tema y nivel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos?cursoId={{cursoId}}&temaId={{temaId}}&nivel=BASICO"
+          }
+        },
+        {
+          "name": "Filtrar por curso — lista completa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos?cursoId={{cursoId}}"
+          }
+        },
+        {
+          "name": "Nivel inválido — 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos?cursoId={{cursoId}}&nivel=EXPERTO"
+          }
+        },
+        {
+          "name": "Curso inexistente — 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos?cursoId=999999"
+          }
+        },
+        {
+          "name": "Detalle del micro-reto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos/{{microRetoId}}"
+          }
+        },
+        {
+          "name": "Micro-reto inexistente — 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos/999999"
+          }
+        },
+        {
+          "name": "Método no permitido — 405",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos"
+          }
+        }
+      ]
+    }
+  ]
+}
