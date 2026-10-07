@@ -3,21 +3,25 @@ package com.adaptcode.utp.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.adaptcode.utp.dto.MicroRetoDetalleResponseDTO;
-import com.adaptcode.utp.dto.MicroRetoResumenResponseDTO;
-import com.adaptcode.utp.model.NivelMicroReto;
+import com.adaptcode.utp.dto.request.MicroRetoFiltroRequest;
+import com.adaptcode.utp.dto.response.MicroRetoDetalleResponseDTO;
+import com.adaptcode.utp.dto.response.MicroRetoResumenResponseDTO;
 import com.adaptcode.utp.service.MicroRetoService;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/micro-retos")
+@Validated
 @RequiredArgsConstructor
 public class MicroRetoController {
 
@@ -25,14 +29,14 @@ public class MicroRetoController {
 
 	@GetMapping
 	public ResponseEntity<List<MicroRetoResumenResponseDTO>> listar(
-			@RequestParam Long cursoId,
-			@RequestParam(required = false) Long temaId,
-			@RequestParam(required = false) NivelMicroReto nivel) {
-		return ResponseEntity.ok(microRetoService.obtenerResumenes(cursoId, temaId, nivel));
+			@Valid @ModelAttribute MicroRetoFiltroRequest filtro) {
+		return ResponseEntity.ok(microRetoService.obtenerResumenes(
+				filtro.cursoId(), filtro.temaId(), filtro.nivel()));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<MicroRetoDetalleResponseDTO> obtenerDetalle(@PathVariable Long id) {
+	public ResponseEntity<MicroRetoDetalleResponseDTO> obtenerDetalle(
+			@Positive(message = "El identificador debe ser positivo.") @PathVariable Long id) {
 		return ResponseEntity.ok(microRetoService.obtenerDetalle(id));
 	}
 }

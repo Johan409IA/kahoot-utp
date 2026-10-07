@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.adaptcode.utp.dto.CursoResponseDTO;
+import com.adaptcode.utp.dto.response.CursoResponseDTO;
 import com.adaptcode.utp.service.CursoService;
 
 import lombok.RequiredArgsConstructor;

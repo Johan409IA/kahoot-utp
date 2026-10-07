@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.adaptcode.utp.dto.CursoResponseDTO;
+import com.adaptcode.utp.dto.response.CursoResponseDTO;
 import com.adaptcode.utp.repository.CursoRepository;
 
 import lombok.RequiredArgsConstructor;

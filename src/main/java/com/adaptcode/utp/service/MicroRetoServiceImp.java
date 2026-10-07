@@ -2,28 +2,27 @@ package com.adaptcode.utp.service;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
-import com.adaptcode.utp.dto.BloqueMicroRetoResponseDTO;
-import com.adaptcode.utp.dto.CodigoMicroRetoResponseDTO;
-import com.adaptcode.utp.dto.ContenidoMicroRetoResponseDTO;
-import com.adaptcode.utp.dto.FragmentoMicroRetoResponseDTO;
-import com.adaptcode.utp.dto.MicroRetoDetalleResponseDTO;
-import com.adaptcode.utp.dto.MicroRetoResumenResponseDTO;
-import com.adaptcode.utp.dto.OpcionMicroRetoResponseDTO;
-import com.adaptcode.utp.dto.OrdenarBloquesContenidoDTO;
-import com.adaptcode.utp.dto.PredecirSalidaContenidoDTO;
-import com.adaptcode.utp.dto.SeleccionMultipleContenidoDTO;
-import com.adaptcode.utp.dto.SeleccionarFragmentoContenidoDTO;
+import com.adaptcode.utp.dto.response.BloqueMicroRetoResponseDTO;
+import com.adaptcode.utp.dto.response.CodigoMicroRetoResponseDTO;
+import com.adaptcode.utp.dto.response.ContenidoMicroRetoResponseDTO;
+import com.adaptcode.utp.dto.response.FragmentoMicroRetoResponseDTO;
+import com.adaptcode.utp.dto.response.MicroRetoDetalleResponseDTO;
+import com.adaptcode.utp.dto.response.MicroRetoResumenResponseDTO;
+import com.adaptcode.utp.dto.response.OpcionMicroRetoResponseDTO;
+import com.adaptcode.utp.dto.response.OrdenarBloquesContenidoDTO;
+import com.adaptcode.utp.dto.response.PredecirSalidaContenidoDTO;
+import com.adaptcode.utp.dto.response.SeleccionMultipleContenidoDTO;
+import com.adaptcode.utp.dto.response.SeleccionarFragmentoContenidoDTO;
+import com.adaptcode.utp.exception.ResourceNotFoundException;
+import com.adaptcode.utp.exception.SolicitudInvalidaException;
 import com.adaptcode.utp.model.Alternativa;
 import com.adaptcode.utp.model.Bloque;
 import com.adaptcode.utp.model.MicroReto;
 import com.adaptcode.utp.model.NivelMicroReto;
 import com.adaptcode.utp.model.Tema;
-import com.adaptcode.utp.model.TipoMicroReto;
 import com.adaptcode.utp.repository.CursoRepository;
 import com.adaptcode.utp.repository.MicroRetoRepository;
 import com.adaptcode.utp.repository.TemaRepository;
@@ -44,15 +43,15 @@ public class MicroRetoServiceImp implements MicroRetoService {
 			Long cursoId, Long temaId, NivelMicroReto nivel) {
 		validarIdentificador(cursoId);
 		if (!cursoRepository.existsByIdAndActivoTrue(cursoId)) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El curso no existe.");
+			throw new ResourceNotFoundException("El curso no existe.");
 		}
 
 		if (temaId != null) {
 			validarIdentificador(temaId);
 			Tema tema = temaRepository.findByIdAndActivoTrue(temaId)
-					.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El tema no existe."));
+					.orElseThrow(() -> new ResourceNotFoundException("El tema no existe."));
 			if (!cursoId.equals(tema.getCurso().getId())) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+				throw new SolicitudInvalidaException(
 						"El tema no pertenece al curso indicado.");
 			}
 		}
@@ -68,7 +67,7 @@ public class MicroRetoServiceImp implements MicroRetoService {
 		validarIdentificador(id);
 		MicroReto microReto = microRetoRepository
 				.findByIdAndActivoTrueAndTema_ActivoTrueAndTema_Curso_ActivoTrue(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El micro-reto no existe."));
+				.orElseThrow(() -> new ResourceNotFoundException("El micro-reto no existe."));
 
 		return new MicroRetoDetalleResponseDTO(
 				microReto.getId(), microReto.getTema().getId(), microReto.getTipo(), microReto.getNivel(),
@@ -129,7 +128,7 @@ public class MicroRetoServiceImp implements MicroRetoService {
 
 	private void validarIdentificador(Long id) {
 		if (id == null || id <= 0) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El identificador debe ser positivo.");
+			throw new SolicitudInvalidaException("El identificador debe ser positivo.");
 		}
 	}
 }

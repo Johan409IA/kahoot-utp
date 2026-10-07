@@ -70,7 +70,7 @@ public class CatalogoDemoInitializer implements CommandLineRunner {
 	private MicroReto microRetoCondicional(Tema tema) {
 		MicroReto reto = nuevoReto("DEMO-ALG-COND-01", tema, TipoMicroReto.SELECCION_MULTIPLE,
 				"Con edad = 18, ¿la condición edad >= 18 es verdadera?", null, null);
-		Alternativa verdadera = agregarOpcion(reto, "Verdadero", 1, true);
+		agregarOpcion(reto, "Verdadero", 1, true);
 		Alternativa falsa = agregarOpcion(reto, "Falso", 2, false);
 		agregarFeedback(reto, null,
 				"La condición incluye el caso límite.",
