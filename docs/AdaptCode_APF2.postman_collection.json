@@ -1,0 +1,480 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-adaptcode-apf2-expo",
+    "name": "AdaptCode UTP — Exposición APF2",
+    "description": "Flujo de exposición en orden: Auth → Catálogo → Docente (pregunta, quiz) → Sala en vivo → Práctica autónoma. Ejecutar las carpetas en orden; los IDs y tokens se guardan solos en variables. Requiere perfil demo y PostgreSQL local.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "tokenDocente", "value": "" },
+    { "key": "tokenEstudiante", "value": "" },
+    { "key": "docenteId", "value": "1" },
+    { "key": "estudianteId", "value": "2" },
+    { "key": "cursoId", "value": "1" },
+    { "key": "temaId", "value": "1" },
+    { "key": "microRetoId", "value": "1" },
+    { "key": "preguntaId", "value": "" },
+    { "key": "alternativaCorrectaId", "value": "" },
+    { "key": "alternativaIncorrectaId", "value": "" },
+    { "key": "quizId", "value": "" },
+    { "key": "salaId", "value": "" },
+    { "key": "pin", "value": "" },
+    { "key": "participacionId", "value": "" },
+    { "key": "codigoDocente", "value": "" },
+    { "key": "codigoEstudiante", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Registro docente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Carlos\",\n  \"apellidos\": \"Mendoza\",\n  \"correo\": \"c20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/auth/registro"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('docenteId', j.usuarioId);",
+                  "pm.collectionVariables.set('codigoDocente', j.codigoVerificacion);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verificar docente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"c20240001@utp.edu.pe\",\n  \"codigo\": \"{{codigoDocente}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/auth/verificar-cuenta"
+          }
+        },
+        {
+          "name": "Login docente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"c20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('tokenDocente', j.token);",
+                  "pm.collectionVariables.set('docenteId', j.usuarioId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Registro estudiante",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Paredes\",\n  \"correo\": \"u20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/auth/registro"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('estudianteId', j.usuarioId);",
+                  "pm.collectionVariables.set('codigoEstudiante', j.codigoVerificacion);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verificar estudiante",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"u20240001@utp.edu.pe\",\n  \"codigo\": \"{{codigoEstudiante}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/auth/verificar-cuenta"
+          }
+        },
+        {
+          "name": "Login estudiante",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"u20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('tokenEstudiante', j.token);",
+                  "pm.collectionVariables.set('estudianteId', j.usuarioId);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Catálogo (público)",
+      "item": [
+        {
+          "name": "Listar cursos",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/cursos" }
+        },
+        {
+          "name": "Listar temas por curso",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/cursos/{{cursoId}}/temas" }
+        },
+        {
+          "name": "Filtrar micro-retos",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/micro-retos?cursoId={{cursoId}}&temaId={{temaId}}&nivel=BASICO" }
+        },
+        {
+          "name": "Detalle del micro-reto",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/micro-retos/{{microRetoId}}" }
+        }
+      ]
+    },
+    {
+      "name": "3. Docente — pregunta y quiz",
+      "item": [
+        {
+          "name": "Crear pregunta propia",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"temaId\": {{temaId}},\n  \"tipo\": \"SELECCION_MULTIPLE\",\n  \"nivel\": \"BASICO\",\n  \"enunciado\": \"Con edad = 18, ¿la condición edad >= 18 es verdadera?\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('preguntaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear alternativa correcta",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"Verdadero\",\n  \"codigo\": null,\n  \"lenguaje\": null,\n  \"ordenVisual\": 1,\n  \"correcta\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId}}/alternativas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('alternativaCorrectaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear alternativa incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": \"Falso\",\n  \"codigo\": null,\n  \"lenguaje\": null,\n  \"ordenVisual\": 2,\n  \"correcta\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId}}/alternativas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('alternativaIncorrectaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear retroalimentación (Q19)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alternativaId\": {{alternativaIncorrectaId}},\n  \"causa\": \"Confunde el operador >= con >.\",\n  \"explicacion\": \">= acepta valores mayores o iguales; con edad = 18 la condición se cumple.\",\n  \"secuenciaTextual\": \"Comparar 18 con 18; verificar que >= incluye la igualdad; obtener verdadero.\",\n  \"sugerencia\": \"Distingue > de >= en el caso límite.\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId}}/retroalimentaciones"
+          }
+        },
+        {
+          "name": "Crear quiz",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Condicionales - repaso\",\n  \"items\": [{ \"preguntaId\": {{preguntaId}}, \"orden\": 1 }]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/quizzes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.collectionVariables.set('quizId', pm.response.json().id);"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marcar quiz Listo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/quizzes/{{quizId}}/listo"
+          }
+        },
+        {
+          "name": "Crear sala (PIN generado)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quizId\": {{quizId}},\n  \"tiempoPorPregunta\": 60,\n  \"ampliacion\": \"ESTANDAR\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/salas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var j = pm.response.json();",
+                  "pm.collectionVariables.set('salaId', j.id);",
+                  "pm.collectionVariables.set('pin', j.pin);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Sala en vivo",
+      "item": [
+        {
+          "name": "Buscar sala por PIN",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }],
+            "url": "{{baseUrl}}/api/salas/por-pin?pin={{pin}}"
+          }
+        },
+        {
+          "name": "Unirse a la sala",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudianteId}}\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/salas/{{salaId}}/participaciones"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.collectionVariables.set('participacionId', pm.response.json().id);"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Iniciar sala (docente)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/salas/{{salaId}}/iniciar"
+          }
+        },
+        {
+          "name": "Responder (estudiante)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participacionId\": {{participacionId}},\n  \"preguntaId\": {{preguntaId}},\n  \"acierto\": true,\n  \"omitida\": false,\n  \"tiempoMs\": 8000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/salas/{{salaId}}/respuestas"
+          }
+        },
+        {
+          "name": "Ranking de la sala",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "url": "{{baseUrl}}/api/salas/{{salaId}}/ranking"
+          }
+        },
+        {
+          "name": "Finalizar sala (docente)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/salas/{{salaId}}/finalizar"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Práctica autónoma",
+      "item": [
+        {
+          "name": "Evaluar fallo (devuelve feedback)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"microRetoId\": {{microRetoId}},\n  \"alternativaId\": 2,\n  \"ordenBloques\": null,\n  \"usoAyuda\": false,\n  \"tiempoMs\": 4000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/intentos/evaluar"
+          }
+        },
+        {
+          "name": "Consultar progreso",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }],
+            "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/progreso"
+          }
+        },
+        {
+          "name": "Consultar insignias",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }],
+            "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/insignias"
+          }
+        },
+        {
+          "name": "Guardar preferencias",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tema\": \"NORMAL\",\n  \"tamanoTexto\": \"NORMAL\",\n  \"reduccionMovimiento\": false,\n  \"sonidoActivado\": true,\n  \"modoDaltonismo\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/preferencias"
+          }
+        }
+      ]
+    }
+  ]
+}

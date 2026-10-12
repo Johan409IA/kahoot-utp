@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.adaptcode.utp.exception.AutenticacionException;
 import com.adaptcode.utp.exception.ResourceNotFoundException;
 import com.adaptcode.utp.exception.SolicitudInvalidaException;
 
@@ -79,6 +80,14 @@ public class GlobalExceptionHandler {
 		Map<String, String> error = new HashMap<>();
 		error.put("error", ex.getMessage());
 		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(AutenticacionException.class)
+	public ResponseEntity<Map<String, String>> handleAutenticacion(
+			AutenticacionException ex) {
+		Map<String, String> error = new HashMap<>();
+		error.put("error", ex.getMessage());
+		return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)

@@ -51,8 +51,21 @@ public class Usuario {
 	@Column(name = "activo", nullable = false)
 	private boolean activo = true;
 
+	@Column(name = "credencial_cambiada_en")
+	private Instant credencialCambiadaEn;
+
 	@Column(name = "creado_en", nullable = false, updatable = false)
 	private Instant creadoEn;
+
+	public Usuario(String correo, String nombres, String apellidos,
+			String contrasenaHash, RolUsuario rol, boolean activo) {
+		this.correo = correo;
+		this.nombres = nombres;
+		this.apellidos = apellidos;
+		this.contrasenaHash = contrasenaHash;
+		this.rol = rol;
+		this.activo = activo;
+	}
 
 	@PrePersist
 	@PreUpdate
