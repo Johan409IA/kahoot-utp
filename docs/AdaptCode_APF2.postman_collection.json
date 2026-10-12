@@ -2,27 +2,106 @@
   "info": {
     "_postman_id": "a1b2c3d4-adaptcode-apf2-expo",
     "name": "AdaptCode UTP — Exposición APF2",
-    "description": "Flujo de exposición en orden: Auth → Catálogo → Docente (pregunta, quiz) → Sala en vivo → Práctica autónoma. Ejecutar las carpetas en orden; los IDs y tokens se guardan solos en variables. Requiere perfil demo y PostgreSQL local.",
+    "description": "Flujo de exposición en orden con 3 preguntas SQL: 1. Auth docente y estudiante (registro → verificación → login, encadenado), 2. catálogo, 3. docente (3 preguntas → 6 alternativas → 3 feedbacks → quiz de 3 ítems → Listo → sala), 4. sala en vivo (abrir espera → PIN → unirse → iniciar → 3 respuestas → ranking → finalizar) y 5. autónoma (evaluar fallo ×3 → progreso → insignias). Requiere perfil demo y PostgreSQL local.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:8080" },
-    { "key": "tokenDocente", "value": "" },
-    { "key": "tokenEstudiante", "value": "" },
-    { "key": "docenteId", "value": "1" },
-    { "key": "estudianteId", "value": "2" },
-    { "key": "cursoId", "value": "1" },
-    { "key": "temaId", "value": "1" },
-    { "key": "microRetoId", "value": "1" },
-    { "key": "preguntaId", "value": "" },
-    { "key": "alternativaCorrectaId", "value": "" },
-    { "key": "alternativaIncorrectaId", "value": "" },
-    { "key": "quizId", "value": "" },
-    { "key": "salaId", "value": "" },
-    { "key": "pin", "value": "" },
-    { "key": "participacionId", "value": "" },
-    { "key": "codigoDocente", "value": "" },
-    { "key": "codigoEstudiante", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "tokenDocente",
+      "value": ""
+    },
+    {
+      "key": "tokenEstudiante",
+      "value": ""
+    },
+    {
+      "key": "docenteId",
+      "value": "1"
+    },
+    {
+      "key": "estudianteId",
+      "value": "2"
+    },
+    {
+      "key": "cursoId",
+      "value": "1"
+    },
+    {
+      "key": "temaId",
+      "value": "1"
+    },
+    {
+      "key": "microRetoId",
+      "value": "1"
+    },
+    {
+      "key": "quizId",
+      "value": ""
+    },
+    {
+      "key": "salaId",
+      "value": ""
+    },
+    {
+      "key": "pin",
+      "value": ""
+    },
+    {
+      "key": "participacionId",
+      "value": ""
+    },
+    {
+      "key": "codigoDocente",
+      "value": ""
+    },
+    {
+      "key": "codigoEstudiante",
+      "value": ""
+    },
+    {
+      "key": "alternativaSeedIncorrecta",
+      "value": "7"
+    },
+    {
+      "key": "preguntaId1",
+      "value": ""
+    },
+    {
+      "key": "preguntaId2",
+      "value": ""
+    },
+    {
+      "key": "preguntaId3",
+      "value": ""
+    },
+    {
+      "key": "alt1CorrectaId",
+      "value": ""
+    },
+    {
+      "key": "alt1IncorrectaId",
+      "value": ""
+    },
+    {
+      "key": "alt2CorrectaId",
+      "value": ""
+    },
+    {
+      "key": "alt2IncorrectaId",
+      "value": ""
+    },
+    {
+      "key": "alt3CorrectaId",
+      "value": ""
+    },
+    {
+      "key": "alt3IncorrectaId",
+      "value": ""
+    }
   ],
   "item": [
     {
@@ -32,11 +111,20 @@
           "name": "Registro docente",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombres\": \"Carlos\",\n  \"apellidos\": \"Mendoza\",\n  \"correo\": \"c20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/auth/registro"
           },
@@ -58,11 +146,20 @@
           "name": "Verificar docente",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"correo\": \"c20240001@utp.edu.pe\",\n  \"codigo\": \"{{codigoDocente}}\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/auth/verificar-cuenta"
           }
@@ -71,11 +168,20 @@
           "name": "Login docente",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"correo\": \"c20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/auth/login"
           },
@@ -97,11 +203,20 @@
           "name": "Registro estudiante",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Paredes\",\n  \"correo\": \"u20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/auth/registro"
           },
@@ -123,11 +238,20 @@
           "name": "Verificar estudiante",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"correo\": \"u20240001@utp.edu.pe\",\n  \"codigo\": \"{{codigoEstudiante}}\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/auth/verificar-cuenta"
           }
@@ -136,11 +260,20 @@
           "name": "Login estudiante",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"correo\": \"u20240001@utp.edu.pe\",\n  \"contrasena\": \"Clave1234\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/auth/login"
           },
@@ -165,19 +298,35 @@
       "item": [
         {
           "name": "Listar cursos",
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/cursos" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/cursos"
+          }
         },
         {
           "name": "Listar temas por curso",
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/cursos/{{cursoId}}/temas" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/cursos/{{cursoId}}/temas"
+          }
         },
         {
           "name": "Filtrar micro-retos",
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/micro-retos?cursoId={{cursoId}}&temaId={{temaId}}&nivel=BASICO" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos?cursoId={{cursoId}}&temaId={{temaId}}&nivel=BASICO"
+          }
         },
         {
           "name": "Detalle del micro-reto",
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/micro-retos/{{microRetoId}}" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/micro-retos/{{microRetoId}}"
+          }
         }
       ]
     },
@@ -185,17 +334,27 @@
       "name": "3. Docente — pregunta y quiz",
       "item": [
         {
-          "name": "Crear pregunta propia",
+          "name": "Crear pregunta 1 (SQL)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"temaId\": {{temaId}},\n  \"tipo\": \"SELECCION_MULTIPLE\",\n  \"nivel\": \"BASICO\",\n  \"enunciado\": \"Con edad = 18, ¿la condición edad >= 18 es verdadera?\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"temaId\": \"{{temaId}}\",\n  \"tipo\": \"SELECCIONAR_FRAGMENTO\",\n  \"nivel\": \"BASICO\",\n  \"enunciado\": \"¿Qué consulta obtiene todas las filas de la tabla estudiantes?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas"
           },
@@ -205,26 +364,36 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.collectionVariables.set('preguntaId', pm.response.json().id);"
+                  "pm.collectionVariables.set('preguntaId1', pm.response.json().id);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Crear alternativa correcta",
+          "name": "Crear alternativa P1 correcta",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"texto\": \"Verdadero\",\n  \"codigo\": null,\n  \"lenguaje\": null,\n  \"ordenVisual\": 1,\n  \"correcta\": true\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"texto\": null,\n  \"codigo\": \"SELECT * FROM estudiantes;\",\n  \"lenguaje\": \"sql\",\n  \"ordenVisual\": 1,\n  \"correcta\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId}}/alternativas"
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId1}}/alternativas"
           },
           "event": [
             {
@@ -232,26 +401,36 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.collectionVariables.set('alternativaCorrectaId', pm.response.json().id);"
+                  "pm.collectionVariables.set('alt1CorrectaId', pm.response.json().id);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Crear alternativa incorrecta",
+          "name": "Crear alternativa P1 incorrecta",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"texto\": \"Falso\",\n  \"codigo\": null,\n  \"lenguaje\": null,\n  \"ordenVisual\": 2,\n  \"correcta\": false\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"texto\": null,\n  \"codigo\": \"SELECT estudiantes FROM *;\",\n  \"lenguaje\": \"sql\",\n  \"ordenVisual\": 2,\n  \"correcta\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId}}/alternativas"
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId1}}/alternativas"
           },
           "event": [
             {
@@ -259,40 +438,334 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.collectionVariables.set('alternativaIncorrectaId', pm.response.json().id);"
+                  "pm.collectionVariables.set('alt1IncorrectaId', pm.response.json().id);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Crear retroalimentación (Q19)",
+          "name": "Crear feedback P1 (Q19)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"alternativaId\": {{alternativaIncorrectaId}},\n  \"causa\": \"Confunde el operador >= con >.\",\n  \"explicacion\": \">= acepta valores mayores o iguales; con edad = 18 la condición se cumple.\",\n  \"secuenciaTextual\": \"Comparar 18 con 18; verificar que >= incluye la igualdad; obtener verdadero.\",\n  \"sugerencia\": \"Distingue > de >= en el caso límite.\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"alternativaId\": {{alt1IncorrectaId}},\n  \"causa\": \"El nombre de la tabla se coloco en la lista de columnas.\",\n  \"explicacion\": \"En SELECT se indican las columnas antes de FROM y el nombre de la tabla despues.\",\n  \"secuenciaTextual\": \"Escribir SELECT y las columnas; agregar FROM y luego la tabla.\",\n  \"sugerencia\": \"Identifica que parte nombra las columnas y cual nombra la tabla.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId}}/retroalimentaciones"
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId1}}/retroalimentaciones"
           }
         },
         {
-          "name": "Crear quiz",
+          "name": "Crear pregunta 2 (SQL)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"titulo\": \"Condicionales - repaso\",\n  \"items\": [{ \"preguntaId\": {{preguntaId}}, \"orden\": 1 }]\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"temaId\": \"{{temaId}}\",\n  \"tipo\": \"SELECCIONAR_FRAGMENTO\",\n  \"nivel\": \"BASICO\",\n  \"enunciado\": \"¿Qué consulta lista el nombre y la edad de todos los estudiantes?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('preguntaId2', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear alternativa P2 correcta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": null,\n  \"codigo\": \"SELECT nombre, edad FROM estudiantes;\",\n  \"lenguaje\": \"sql\",\n  \"ordenVisual\": 1,\n  \"correcta\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId2}}/alternativas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('alt2CorrectaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear alternativa P2 incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": null,\n  \"codigo\": \"SELECT nombre edad FROM estudiantes;\",\n  \"lenguaje\": \"sql\",\n  \"ordenVisual\": 2,\n  \"correcta\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId2}}/alternativas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('alt2IncorrectaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear feedback P2 (Q19)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alternativaId\": {{alt2IncorrectaId}},\n  \"causa\": \"Falta la coma entre columnas: SQL lo lee como un solo identificador.\",\n  \"explicacion\": \"En SELECT las columnas se separan con comas antes de FROM.\",\n  \"secuenciaTextual\": \"Escribir SELECT; listar nombre, coma, edad; agregar FROM estudiantes.\",\n  \"sugerencia\": \"Revisa cuantas columnas pide el enunciado y separalas con comas.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId2}}/retroalimentaciones"
+          }
+        },
+        {
+          "name": "Crear pregunta 3 (SQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"temaId\": \"{{temaId}}\",\n  \"tipo\": \"SELECCIONAR_FRAGMENTO\",\n  \"nivel\": \"BASICO\",\n  \"enunciado\": \"¿Qué consulta lista el nombre de los estudiantes mayores de edad?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('preguntaId3', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear alternativa P3 correcta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": null,\n  \"codigo\": \"SELECT nombre FROM estudiantes WHERE edad >= 18;\",\n  \"lenguaje\": \"sql\",\n  \"ordenVisual\": 1,\n  \"correcta\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId3}}/alternativas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('alt3CorrectaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear alternativa P3 incorrecta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texto\": null,\n  \"codigo\": \"SELECT nombre FROM estudiantes WHERE edad => 18;\",\n  \"lenguaje\": \"sql\",\n  \"ordenVisual\": 2,\n  \"correcta\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId3}}/alternativas"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('alt3IncorrectaId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear feedback P3 (Q19)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alternativaId\": {{alt3IncorrectaId}},\n  \"causa\": \"El operador esta invertido: en SQL se escribe mayor o igual como >=.\",\n  \"explicacion\": \">= incluye la igualdad; => no es un operador valido en SQL.\",\n  \"secuenciaTextual\": \"Escribir WHERE edad; agregar >=; comparar con 18.\",\n  \"sugerencia\": \"Distingue > de >= y recuerda el orden de los simbolos.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/preguntas/{{preguntaId3}}/retroalimentaciones"
+          }
+        },
+        {
+          "name": "Crear quiz (3 preguntas)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"SELECT basico - repaso 3 preguntas\",\n  \"items\": [\n    { \"preguntaId\": {{preguntaId1}}, \"orden\": 1 },\n    { \"preguntaId\": {{preguntaId2}}, \"orden\": 2 },\n    { \"preguntaId\": {{preguntaId3}}, \"orden\": 3 }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/docentes/{{docenteId}}/quizzes"
           },
@@ -301,7 +774,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.collectionVariables.set('quizId', pm.response.json().id);"]
+                "exec": [
+                  "pm.collectionVariables.set('quizId', pm.response.json().id);"
+                ]
               }
             }
           ]
@@ -310,7 +785,12 @@
           "name": "Marcar quiz Listo",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
             "url": "{{baseUrl}}/api/docentes/{{docenteId}}/quizzes/{{quizId}}/listo"
           }
         },
@@ -319,13 +799,23 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenDocente}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quizId\": {{quizId}},\n  \"tiempoPorPregunta\": 60,\n  \"ampliacion\": \"ESTANDAR\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"quizId\": \"{{quizId}}\",\n  \"tiempoPorPregunta\": 60,\n  \"ampliacion\": \"ESTANDAR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/docentes/{{docenteId}}/salas"
           },
@@ -349,10 +839,28 @@
       "name": "4. Sala en vivo",
       "item": [
         {
+          "name": "Abrir espera (docente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/docentes/{{docenteId}}/salas/{{salaId}}/abrir-espera"
+          }
+        },
+        {
           "name": "Buscar sala por PIN",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
+            ],
             "url": "{{baseUrl}}/api/salas/por-pin?pin={{pin}}"
           }
         },
@@ -361,13 +869,23 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"estudianteId\": {{estudianteId}}\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/salas/{{salaId}}/participaciones"
           },
@@ -376,7 +894,9 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.collectionVariables.set('participacionId', pm.response.json().id);"]
+                "exec": [
+                  "pm.collectionVariables.set('participacionId', pm.response.json().id);"
+                ]
               }
             }
           ]
@@ -385,22 +905,89 @@
           "name": "Iniciar sala (docente)",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
             "url": "{{baseUrl}}/api/docentes/{{docenteId}}/salas/{{salaId}}/iniciar"
           }
         },
         {
-          "name": "Responder (estudiante)",
+          "name": "Responder P1 (estudiante)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"participacionId\": {{participacionId}},\n  \"preguntaId\": {{preguntaId}},\n  \"acierto\": true,\n  \"omitida\": false,\n  \"tiempoMs\": 8000\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"participacionId\": {{participacionId}},\n  \"preguntaId\": {{preguntaId1}},\n  \"acierto\": true,\n  \"omitida\": false,\n  \"tiempoMs\": 8000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/salas/{{salaId}}/respuestas"
+          }
+        },
+        {
+          "name": "Responder P2 (estudiante)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participacionId\": {{participacionId}},\n  \"preguntaId\": {{preguntaId2}},\n  \"acierto\": true,\n  \"omitida\": false,\n  \"tiempoMs\": 7000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/salas/{{salaId}}/respuestas"
+          }
+        },
+        {
+          "name": "Responder P3 (estudiante)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participacionId\": {{participacionId}},\n  \"preguntaId\": {{preguntaId3}},\n  \"acierto\": false,\n  \"omitida\": false,\n  \"tiempoMs\": 9000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/salas/{{salaId}}/respuestas"
           }
@@ -409,7 +996,12 @@
           "name": "Ranking de la sala",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
             "url": "{{baseUrl}}/api/salas/{{salaId}}/ranking"
           }
         },
@@ -417,7 +1009,12 @@
           "name": "Finalizar sala (docente)",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tokenDocente}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenDocente}}"
+              }
+            ],
             "url": "{{baseUrl}}/api/docentes/{{docenteId}}/salas/{{salaId}}/finalizar"
           }
         }
@@ -431,13 +1028,23 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"microRetoId\": {{microRetoId}},\n  \"alternativaId\": 2,\n  \"ordenBloques\": null,\n  \"usoAyuda\": false,\n  \"tiempoMs\": 4000\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"microRetoId\": {{microRetoId}},\n  \"alternativaId\": {{alternativaSeedIncorrecta}},\n  \"ordenBloques\": null,\n  \"usoAyuda\": false,\n  \"tiempoMs\": 4000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/intentos/evaluar"
           }
@@ -446,7 +1053,12 @@
           "name": "Consultar progreso",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }],
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
+            ],
             "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/progreso"
           }
         },
@@ -454,24 +1066,13 @@
           "name": "Consultar insignias",
           "request": {
             "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }],
-            "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/insignias"
-          }
-        },
-        {
-          "name": "Guardar preferencias",
-          "request": {
-            "method": "PUT",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{tokenEstudiante}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenEstudiante}}"
+              }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"tema\": \"NORMAL\",\n  \"tamanoTexto\": \"NORMAL\",\n  \"reduccionMovimiento\": false,\n  \"sonidoActivado\": true,\n  \"modoDaltonismo\": false\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/preferencias"
+            "url": "{{baseUrl}}/api/usuarios/{{estudianteId}}/insignias"
           }
         }
       ]

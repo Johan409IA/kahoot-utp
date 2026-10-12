@@ -93,8 +93,19 @@ public class SalaServiceImp implements SalaService {
 
 	@Override
 	@Transactional
-	public SalaResponse iniciarSala(Long docenteId, Long id) {
+	public SalaResponse abrirEspera(Long docenteId, Long id) {
 		Sala sala = buscarSalaDeDocente(docenteId, id);
+		if (sala.getEstado() != EstadoSala.BORRADOR) {
+			throw new SolicitudInvalidaException(
+					"Solo una sala en borrador puede abrir la espera.");
+		}
+		sala.setEstado(EstadoSala.SALA_ESPERA);
+		return aResponse(salaRepository.save(sala));
+	}
+
+	@Override
+	@Transactional
+	public SalaResponse iniciarSala(Long docenteId, Long id) {		Sala sala = buscarSalaDeDocente(docenteId, id);
 		if (sala.getEstado() != EstadoSala.BORRADOR
 				&& sala.getEstado() != EstadoSala.SALA_ESPERA) {
 			throw new SolicitudInvalidaException(

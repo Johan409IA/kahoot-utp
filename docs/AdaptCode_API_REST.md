@@ -8,6 +8,206 @@ La colección Postman con el flujo de exposición (lista para importar y
 ejecutar en orden) está en
 [`AdaptCode_APF2.postman_collection.json`](AdaptCode_APF2.postman_collection.json).
 
+## Guía de exposición 
+
+Flujo verificado en vivo con un docente (`c20240001@utp.edu.pe`) y un
+estudiante (`u20240001@utp.edu.pe`), tres preguntas SQL de Bases de Datos
+(tema Consultas SELECT, `id 4`), quiz de 3 ítems y sala en vivo. Los IDs y
+tokens se encadenan solos por variables de la colección; solo hay que
+ejecutar de arriba abajo.
+
+> Nota: si el registro responde `400` (`El correo ya está registrado`) es
+> porque ese correo ya existe de una prueba anterior: se salta al login.
+> Los IDs mostrados (`preguntas 2, 3, 4`, `quiz 6`, `sala 2`, PIN
+> `437661`) son los de la ejecución de referencia; en una BD fresca los
+> IDs los asigna la colección sola.
+
+### 1. Auth (6 requests)
+
+1. **Registro docente** `POST /api/auth/registro` — crea al docente y
+   devuelve `usuarioId` y el `codigoVerificacion` de 6 dígitos.
+   ```json
+   { "nombres": "Carlos", "apellidos": "Mendoza",
+     "correo": "c20240001@utp.edu.pe", "contrasena": "Clave1234" }
+   ```
+2. **Verificar docente** `POST /api/auth/verificar-cuenta` — con el
+   código del paso 1.
+   ```json
+   { "correo": "c20240001@utp.edu.pe", "codigo": "{{codigoDocente}}" }
+   ```
+3. **Login docente** `POST /api/auth/login` — guarda `tokenDocente`
+   (`DOCENTE_UTP`).
+   ```json
+   { "correo": "c20240001@utp.edu.pe", "contrasena": "Clave1234" }
+   ```
+4. **Registro estudiante** `POST /api/auth/registro`.
+   ```json
+   { "nombres": "Ana", "apellidos": "Paredes",
+     "correo": "u20240001@utp.edu.pe", "contrasena": "Clave1234" }
+   ```
+5. **Verificar estudiante** `POST /api/auth/verificar-cuenta`.
+   ```json
+   { "correo": "u20240001@utp.edu.pe", "codigo": "{{codigoEstudiante}}" }
+   ```
+6. **Login estudiante** `POST /api/auth/login` — guarda
+   `tokenEstudiante` (`ESTUDIANTE_UTP`).
+   ```json
+   { "correo": "u20240001@utp.edu.pe", "contrasena": "Clave1234" }
+   ```
+
+### 2. Catálogo público (4 requests, sin token)
+
+7. **Listar cursos** `GET /api/cursos` → Algoritmos (`1`), Bases de
+   Datos (`3`), Python (`2`).
+8. **Listar temas** `GET /api/cursos/3/temas` → Consultas SELECT
+   (`id 4`).
+9. **Filtrar micro-retos** `GET
+   /api/micro-retos?cursoId=3&temaId=4&nivel=BASICO`.
+10. **Detalle del micro-reto** `GET /api/micro-retos/4` — muestra las
+    opciones SQL sin revelar la correcta.
+
+### 3. Docente: 3 preguntas, 6 alternativas, 3 feedbacks, quiz y sala
+
+11. **Crear pregunta 1** `POST /api/docentes/{{docenteId}}/preguntas`.
+    ```json
+    { "temaId": 4, "tipo": "SELECCIONAR_FRAGMENTO", "nivel": "BASICO",
+      "enunciado": "¿Qué consulta obtiene todas las filas de la tabla estudiantes?" }
+    ```
+12. **Alternativa P1 correcta** `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId1}}/alternativas`.
+    ```json
+    { "texto": null, "codigo": "SELECT * FROM estudiantes;",
+      "lenguaje": "sql", "ordenVisual": 1, "correcta": true }
+    ```
+13. **Alternativa P1 incorrecta** `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId1}}/alternativas`.
+    ```json
+    { "texto": null, "codigo": "SELECT estudiantes FROM *;",
+      "lenguaje": "sql", "ordenVisual": 2, "correcta": false }
+    ```
+14. **Feedback P1 (Q19)** `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId1}}/retroalimentaciones` — solo en la
+    incorrecta, una por alternativa.
+    ```json
+    { "alternativaId": "{{alt1IncorrectaId}}",
+      "causa": "El nombre de la tabla se coloco en la lista de columnas.",
+      "explicacion": "En SELECT se indican las columnas antes de FROM y el nombre de la tabla despues.",
+      "secuenciaTextual": "Escribir SELECT y las columnas; agregar FROM y luego la tabla.",
+      "sugerencia": "Identifica que parte nombra las columnas y cual nombra la tabla." }
+    ```
+15. **Crear pregunta 2** `POST /api/docentes/{{docenteId}}/preguntas`.
+    ```json
+    { "temaId": 4, "tipo": "SELECCIONAR_FRAGMENTO", "nivel": "BASICO",
+      "enunciado": "¿Qué consulta lista el nombre y la edad de todos los estudiantes?" }
+    ```
+16. **Alternativa P2 correcta** `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId2}}/alternativas`.
+    ```json
+    { "texto": null, "codigo": "SELECT nombre, edad FROM estudiantes;",
+      "lenguaje": "sql", "ordenVisual": 1, "correcta": true }
+    ```
+17. **Alternativa P2 incorrecta** (falta la coma) `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId2}}/alternativas`.
+    ```json
+    { "texto": null, "codigo": "SELECT nombre edad FROM estudiantes;",
+      "lenguaje": "sql", "ordenVisual": 2, "correcta": false }
+    ```
+18. **Feedback P2 (Q19)** `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId2}}/retroalimentaciones`.
+    ```json
+    { "alternativaId": "{{alt2IncorrectaId}}",
+      "causa": "Falta la coma entre columnas: SQL lo lee como un solo identificador.",
+      "explicacion": "En SELECT las columnas se separan con comas antes de FROM.",
+      "secuenciaTextual": "Escribir SELECT; listar nombre, coma, edad; agregar FROM estudiantes.",
+      "sugerencia": "Revisa cuantas columnas pide el enunciado y separalas con comas." }
+    ```
+19. **Crear pregunta 3** `POST /api/docentes/{{docenteId}}/preguntas`.
+    ```json
+    { "temaId": 4, "tipo": "SELECCIONAR_FRAGMENTO", "nivel": "BASICO",
+      "enunciado": "¿Qué consulta lista el nombre de los estudiantes mayores de edad?" }
+    ```
+20. **Alternativa P3 correcta** `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId3}}/alternativas`.
+    ```json
+    { "texto": null, "codigo": "SELECT nombre FROM estudiantes WHERE edad >= 18;",
+      "lenguaje": "sql", "ordenVisual": 1, "correcta": true }
+    ```
+21. **Alternativa P3 incorrecta** (operador invertido `=>`) `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId3}}/alternativas`.
+    ```json
+    { "texto": null, "codigo": "SELECT nombre FROM estudiantes WHERE edad => 18;",
+      "lenguaje": "sql", "ordenVisual": 2, "correcta": false }
+    ```
+22. **Feedback P3 (Q19)** `POST /api/docentes/{{docenteId}}/preguntas/{{preguntaId3}}/retroalimentaciones`.
+    ```json
+    { "alternativaId": "{{alt3IncorrectaId}}",
+      "causa": "El operador esta invertido: en SQL se escribe mayor o igual como >=.",
+      "explicacion": ">= incluye la igualdad; => no es un operador valido en SQL.",
+      "secuenciaTextual": "Escribir WHERE edad; agregar >=; comparar con 18.",
+      "sugerencia": "Distingue > de >= y recuerda el orden de los simbolos." }
+    ```
+23. **Crear quiz (3 preguntas)** `POST /api/docentes/{{docenteId}}/quizzes`.
+    ```json
+    { "titulo": "SELECT basico - repaso 3 preguntas",
+      "items": [
+        { "preguntaId": "{{preguntaId1}}", "orden": 1 },
+        { "preguntaId": "{{preguntaId2}}", "orden": 2 },
+        { "preguntaId": "{{preguntaId3}}", "orden": 3 } ] }
+    ```
+24. **Marcar quiz Listo** `POST /api/docentes/{{docenteId}}/quizzes/{{quizId}}/listo` — exige
+    ≥1 ítem y feedback completo en cada incorrecta (Q19); si falta,
+    responde `400` (mostrar ese rechazo es parte de la demo).
+25. **Crear sala** `POST /api/docentes/{{docenteId}}/salas` — responde
+    con el PIN de 6 dígitos (se guarda solo en `{{pin}}`).
+    ```json
+    { "quizId": "{{quizId}}", "tiempoPorPregunta": 60,
+      "ampliacion": "ESTANDAR" }
+    ```
+
+### 4. Sala en vivo (9 requests)
+
+26. **Abrir espera** `POST /api/docentes/{{docenteId}}/salas/{{salaId}}/abrir-espera`
+    (docente) — sin este paso nadie puede unirse.
+27. **Buscar por PIN** `GET /api/salas/por-pin?pin={{pin}}`
+    (estudiante).
+28. **Unirse** `POST /api/salas/{{salaId}}/participaciones`
+    (estudiante).
+    ```json
+    { "estudianteId": "{{estudianteId}}" }
+    ```
+29. **Iniciar** `POST /api/docentes/{{docenteId}}/salas/{{salaId}}/iniciar` (docente) — la
+    sala pasa a `EN_CURSO`.
+30. **Responder P1** `POST /api/salas/{{salaId}}/respuestas`
+    (estudiante, un envío único por pregunta).
+    ```json
+    { "participacionId": "{{participacionId}}",
+      "preguntaId": "{{preguntaId1}}",
+      "acierto": true, "omitida": false, "tiempoMs": 8000 }
+    ```
+31. **Responder P2** `POST /api/salas/{{salaId}}/respuestas`.
+    ```json
+    { "participacionId": "{{participacionId}}",
+      "preguntaId": "{{preguntaId2}}",
+      "acierto": true, "omitida": false, "tiempoMs": 7000 }
+    ```
+32. **Responder P3** (fallo a propósito, para ver el ranking con 2/3) `POST /api/salas/{{salaId}}/respuestas`.
+    ```json
+    { "participacionId": "{{participacionId}}",
+      "preguntaId": "{{preguntaId3}}",
+      "acierto": false, "omitida": false, "tiempoMs": 9000 }
+    ```
+33. **Ranking** `GET /api/salas/{{salaId}}/ranking` — en la ejecución
+    de referencia: `posicion: 1, puntos: 2, tiempoMs: 24000`.
+34. **Finalizar** `POST /api/docentes/{{docenteId}}/salas/{{salaId}}/finalizar` (docente).
+
+### 5. Práctica autónoma (3 requests)
+
+35. **Evaluar fallo** `POST /api/usuarios/{{estudianteId}}/intentos/evaluar` (repetir 3 veces
+    con la misma incorrecta del reto 4: `SELECT estudiantes FROM *;`,
+    `alternativaId 7` en BD fresca). Los 2 primeros devuelven la
+    explicación **sin revelar la correcta** (`solucion: null`); al
+    3.er intento, `verSolucionDisponible: true` con la solución (Q47).
+    ```json
+    { "microRetoId": 4, "alternativaId": 7, "ordenBloques": null,
+      "usoAyuda": false, "tiempoMs": 4000 }
+    ```
+36. **Progreso** `GET /api/usuarios/{{estudianteId}}/progreso` — en
+    la referencia: `completado: true, puntoDominio: true`.
+37. **Insignias** `GET /api/usuarios/{{estudianteId}}/insignias` —
+    `PRIMER_PASO` + `PERSEVERANTE`.
+
 ## Autenticación y roles
 
 La API usa JWT. Tras `POST /api/auth/login` se recibe `token`; en los
@@ -171,6 +371,7 @@ Base: `/api/docentes/{docenteId}/salas`.
 | `GET /?estado=` | Listar propias (`estado` opcional). |
 | `GET /{id}` | Mostrar — `200`. |
 | `POST /{id}/iniciar` | `BORRADOR`/`ESPERA` → `EN_CURSO`; congela la versión del quiz — `200`. |
+| `POST /{id}/abrir-espera` | `BORRADOR` → `ESPERA`; habilita el ingreso — `200`. |
 | `POST /{id}/pausar` | `EN_CURSO` → `PAUSADA` — `200` (no acepta respuestas en pausa). |
 | `POST /{id}/reanudar` | `PAUSADA` → `EN_CURSO` — `200`. |
 | `POST /{id}/finalizar` | `EN_CURSO`/`PAUSADA` → `FINALIZADA` — `200`. |
@@ -289,7 +490,8 @@ duplica al reiniciar.
 ## Verificación
 
 1. Ejecutar con `ADAPTCODE_DB_USERNAME`, `ADAPTCODE_DB_PASSWORD` y perfil `demo`.
-2. Importar `AdaptCode_APF2.postman_collection.json` y ejecutar las carpetas
-   en orden: Auth → Catálogo → Docente → Sala en vivo → Práctica autónoma.
+2. Importar `AdaptCode_APF2.postman_collection.json` y ejecutar la
+   “Guía de exposición” en orden (los 37 requests del flujo SQL de 3
+   preguntas).
 3. Reiniciar y comprobar que no hay duplicados.
-4. `./mvnw.cmd test`: 5 pruebas de servicio (quiz+Q19, intento+punto, evaluación, ranking).
+4. `./mvnw.cmd test`: 5 pruebas de servicio.

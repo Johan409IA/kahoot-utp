@@ -16,6 +16,8 @@ public interface SalaService {
 
 	List<SalaResponse> listarPorDocente(Long docenteId, EstadoSala estado);
 
+	SalaResponse abrirEspera(Long docenteId, Long id);
+
 	SalaResponse iniciarSala(Long docenteId, Long id);
 
 	SalaResponse pausarSala(Long docenteId, Long id);

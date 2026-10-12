@@ -52,9 +52,15 @@ public class SalaController {
 		return ResponseEntity.ok(salaService.mostrarPorId(docenteId, id));
 	}
 
-	@PostMapping("/{id}/iniciar")
-	public ResponseEntity<SalaResponse> iniciar(
+	@PostMapping("/{id}/abrir-espera")
+	public ResponseEntity<SalaResponse> abrirEspera(
 			@Positive(message = "El identificador debe ser positivo.") @PathVariable Long docenteId,
+			@Positive(message = "El identificador debe ser positivo.") @PathVariable Long id) {
+		return ResponseEntity.ok(salaService.abrirEspera(docenteId, id));
+	}
+
+	@PostMapping("/{id}/iniciar")
+	public ResponseEntity<SalaResponse> iniciar(			@Positive(message = "El identificador debe ser positivo.") @PathVariable Long docenteId,
 			@Positive(message = "El identificador debe ser positivo.") @PathVariable Long id) {
 		return ResponseEntity.ok(salaService.iniciarSala(docenteId, id));
 	}
