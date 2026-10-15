@@ -18,6 +18,7 @@ public interface SalaRepository extends JpaRepository<Sala, Long> {
 
 	boolean existsByPin(String pin);
 
+	// ! CONSULTA PARA OBTENER LAS SALAS DE UN DOCENTE POR ESTADO
 	@Query("SELECT s FROM Sala s JOIN FETCH s.quizOrigen WHERE s.docente.id = :docenteId AND s.estado = :estado ORDER BY s.id DESC")
 	List<Sala> buscarPorDocenteYEstado(
 			@Param("docenteId") Long docenteId, @Param("estado") EstadoSala estado);

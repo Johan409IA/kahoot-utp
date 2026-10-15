@@ -52,9 +52,9 @@ import lombok.RequiredArgsConstructor;
 public class AuthServiceImp implements AuthService {
 
 	private static final Pattern CORREO_ESTUDIANTE = Pattern
-			.compile("^u\\d+@utp\\.edu\\.pe$");
+			.compile("^u\\d{8}@utp\\.edu\\.pe$");
 	private static final Pattern CORREO_DOCENTE = Pattern
-			.compile("^c\\d+@utp\\.edu\\.pe$");
+			.compile("^c\\d{5}@utp\\.edu\\.pe$");
 	private static final String DOMINIO_UTP = "@utp.edu.pe";
 	private static final String MENSAJE_NEUTRAL = "Si el correo está registrado, "
 			+ "recibirás un código.";
@@ -81,7 +81,7 @@ public class AuthServiceImp implements AuthService {
 		Usuario usuario = usuarioRepository.save(new Usuario(correo,
 				request.nombres().trim(), request.apellidos().trim(), hash, rol,
 				false));
-		CodigoVerificacion codigo = generarCodigo(correo,
+		CodigoVerificacion codigo = generarCodigo(usuario,
 				TipoCodigoVerificacion.VERIFICACION_CUENTA);
 		return new RegistroResponse(usuario.getId(), correo, rol, true,
 				codigo.getCodigo(), codigo.getExpiraEn());
@@ -135,7 +135,7 @@ public class AuthServiceImp implements AuthService {
 		if (usuario.isEmpty() || usuario.get().isActivo()) {
 			return new CodigoResponse(MENSAJE_NEUTRAL, null, null);
 		}
-		CodigoVerificacion codigo = generarCodigo(correo,
+		CodigoVerificacion codigo = generarCodigo(usuario.get(),
 				TipoCodigoVerificacion.VERIFICACION_CUENTA);
 		return new CodigoResponse(MENSAJE_NEUTRAL, codigo.getCodigo(),
 				codigo.getExpiraEn());
@@ -149,7 +149,7 @@ public class AuthServiceImp implements AuthService {
 		if (usuario.isEmpty() || !usuario.get().isActivo()) {
 			return new CodigoResponse(MENSAJE_NEUTRAL, null, null);
 		}
-		CodigoVerificacion codigo = generarCodigo(correo,
+		CodigoVerificacion codigo = generarCodigo(usuario.get(),
 				TipoCodigoVerificacion.RECUPERACION);
 		return new CodigoResponse(MENSAJE_NEUTRAL, codigo.getCodigo(),
 				codigo.getExpiraEn());
@@ -179,19 +179,19 @@ public class AuthServiceImp implements AuthService {
 		}
 		if (correo.endsWith(DOMINIO_UTP)) {
 			throw new SolicitudInvalidaException("El formato del correo institucional "
-					+ "no es válido. Use U+dígitos o C+dígitos @utp.edu.pe.");
+					+ "no es válido. Use U+8 dígitos o C+5 dígitos @utp.edu.pe.");
 		}
 		return RolUsuario.USUARIO_EXTERNO;
 	}
 
-	private CodigoVerificacion generarCodigo(String correo,
+	private CodigoVerificacion generarCodigo(Usuario usuario,
 			TipoCodigoVerificacion tipo) {
-		invalidarCodigosPrevios(correo, tipo);
+		invalidarCodigosPrevios(usuario.getCorreo(), tipo);
 		String codigo = String.format("%06d", random.nextInt(1_000_000));
 		Instant expiraEn = Instant.now()
 				.plus(minutosExpiracionCodigo, ChronoUnit.MINUTES);
 		return codigoVerificacionRepository
-				.save(new CodigoVerificacion(correo, codigo, tipo, expiraEn));
+				.save(new CodigoVerificacion(usuario, codigo, tipo, expiraEn));
 	}
 
 	private void invalidarCodigosPrevios(String correo, TipoCodigoVerificacion tipo) {

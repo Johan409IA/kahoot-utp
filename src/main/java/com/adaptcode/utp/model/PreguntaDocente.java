@@ -18,6 +18,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Setter
@@ -34,6 +36,7 @@ public class PreguntaDocente {
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "docente_id", nullable = false)
 	private Usuario docente;
 
@@ -46,6 +49,7 @@ public class PreguntaDocente {
 	private MicroReto microRetoOrigen;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "tema_id", nullable = false)
 	private Tema tema;
 
