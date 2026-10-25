@@ -1,6 +1,7 @@
 package com.adaptcode.utp.security;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.adaptcode.utp.model.GeneroUsuario;
 import com.adaptcode.utp.model.RolUsuario;
 
 import lombok.Getter;
@@ -25,17 +27,22 @@ public class UsuarioPrincipal implements UserDetails {
 	private final String nombres;
 	private final String apellidos;
 	private final RolUsuario rol;
+	private final GeneroUsuario genero;
+	private final LocalDate fechaNacimiento;
 	private final boolean activo;
 	private final Instant credencialCambiadaEn;
 
 	public UsuarioPrincipal(Long id, String correo, String contrasenaHash, String nombres,
-			String apellidos, RolUsuario rol, boolean activo, Instant credencialCambiadaEn) {
+			String apellidos, RolUsuario rol, GeneroUsuario genero,
+			LocalDate fechaNacimiento, boolean activo, Instant credencialCambiadaEn) {
 		this.id = id;
 		this.correo = correo;
 		this.contrasenaHash = contrasenaHash;
 		this.nombres = nombres;
 		this.apellidos = apellidos;
 		this.rol = rol;
+		this.genero = genero;
+		this.fechaNacimiento = fechaNacimiento;
 		this.activo = activo;
 		this.credencialCambiadaEn = credencialCambiadaEn;
 	}

@@ -1,5 +1,8 @@
 package com.adaptcode.utp.dto.response;
 
+import java.time.LocalDate;
+
+import com.adaptcode.utp.model.GeneroUsuario;
 import com.adaptcode.utp.model.RolUsuario;
 
 public record AuthResponse(
@@ -10,5 +13,7 @@ public record AuthResponse(
 		String correo,
 		String nombres,
 		String apellidos,
-		RolUsuario rol) {
+		RolUsuario rol,
+		GeneroUsuario genero,
+		LocalDate fechaNacimiento) {
 }

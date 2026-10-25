@@ -1,7 +1,13 @@
 package com.adaptcode.utp.dto.request;
 
+import java.time.LocalDate;
+
+import com.adaptcode.utp.model.GeneroUsuario;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 public record RegistroRequest(
@@ -20,5 +26,12 @@ public record RegistroRequest(
 
 		@NotBlank(message = "La contraseña es obligatoria.")
 		@Size(min = 8, max = 72, message = "La contraseña debe tener entre 8 y 72 caracteres.")
-		String contrasena) {
+		String contrasena,
+
+		@NotNull(message = "El género es obligatorio.")
+		GeneroUsuario genero,
+
+		@NotNull(message = "La fecha de nacimiento es obligatoria.")
+		@Past(message = "La fecha de nacimiento debe ser una fecha pasada.")
+		LocalDate fechaNacimiento) {
 }
