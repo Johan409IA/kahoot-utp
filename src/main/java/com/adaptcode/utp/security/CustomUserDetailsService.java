@@ -34,6 +34,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 				usuario.getNombres(),
 				usuario.getApellidos(),
 				usuario.getRol(),
+				usuario.getGenero(),
+				usuario.getFechaNacimiento(),
 				usuario.isActivo(),
 				usuario.getCredencialCambiadaEn());
 	}

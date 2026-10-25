@@ -80,7 +80,7 @@ public class AuthServiceImp implements AuthService {
 		String hash = passwordEncoder.encode(request.contrasena());
 		Usuario usuario = usuarioRepository.save(new Usuario(correo,
 				request.nombres().trim(), request.apellidos().trim(), hash, rol,
-				false));
+				false, request.genero(), request.fechaNacimiento()));
 		CodigoVerificacion codigo = generarCodigo(usuario,
 				TipoCodigoVerificacion.VERIFICACION_CUENTA);
 		return new RegistroResponse(usuario.getId(), correo, rol, true,
@@ -99,7 +99,8 @@ public class AuthServiceImp implements AuthService {
 			String token = jwtService.generateToken(principal);
 			return new AuthResponse(token, "Bearer", jwtService.getExpirationMs(),
 					principal.getId(), principal.getCorreo(), principal.getNombres(),
-					principal.getApellidos(), principal.getRol());
+					principal.getApellidos(), principal.getRol(), principal.getGenero(),
+					principal.getFechaNacimiento());
 		} catch (DisabledException ex) {
 			throw new AutenticacionException("La cuenta no está verificada. "
 					+ "Confirme el código enviado a su correo.");

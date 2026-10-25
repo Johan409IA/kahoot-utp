@@ -47,6 +47,10 @@ public class SecurityConfig {
 				.sessionManagement(session -> session
 						.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+						// Frontend: documento inicial, favicon y assets estaticos son publicos.
+						.requestMatchers(HttpMethod.GET, "/", "/index.html",
+								"/favicon.ico", "/favicon.svg", "/assets/**")
+						.permitAll()
 						.requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/cursos/**",
 								"/api/micro-retos/**").permitAll()

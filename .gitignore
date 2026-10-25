@@ -36,3 +36,4 @@ build/
 
 AGENTS.md
 .agents
+/src/main/resources/application.properties

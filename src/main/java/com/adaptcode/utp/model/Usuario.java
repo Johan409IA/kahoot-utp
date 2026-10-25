@@ -1,6 +1,7 @@
 package com.adaptcode.utp.model;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Locale;
 
 import jakarta.persistence.Column;
@@ -48,6 +49,15 @@ public class Usuario {
 	@Column(name = "rol", nullable = false, length = 32)
 	private RolUsuario rol;
 
+	// Obligatorio en el registro (validado en la capa de solicitud); la columna
+	// admite nulos para no romper cuentas creadas antes de este cambio en Supabase.
+	@Enumerated(EnumType.STRING)
+	@Column(name = "genero", length = 16)
+	private GeneroUsuario genero;
+
+	@Column(name = "fecha_nacimiento")
+	private LocalDate fechaNacimiento;
+
 	@Column(name = "activo", nullable = false)
 	private boolean activo = true;
 
@@ -58,13 +68,16 @@ public class Usuario {
 	private Instant creadoEn;
 
 	public Usuario(String correo, String nombres, String apellidos,
-			String contrasenaHash, RolUsuario rol, boolean activo) {
+			String contrasenaHash, RolUsuario rol, boolean activo,
+			GeneroUsuario genero, LocalDate fechaNacimiento) {
 		this.correo = correo;
 		this.nombres = nombres;
 		this.apellidos = apellidos;
 		this.contrasenaHash = contrasenaHash;
 		this.rol = rol;
 		this.activo = activo;
+		this.genero = genero;
+		this.fechaNacimiento = fechaNacimiento;
 	}
 
 	@PrePersist
